@@ -1,0 +1,50 @@
+section {
+  height: 100vh;
+  background-color: #ececec;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-form {
+  min-width: 400px;
+  height: auto;
+  text-align: center;
+  display: none;
+}
+
+#login-form {
+  min-width: 400px;
+  text-align: center;
+}
+
+#have-an-account-btn {
+  cursor: pointer;
+}
+
+#need-an-account-btn {
+  cursor: pointer;
+}
+
+#user-profile {
+  display: none;
+}
+
+#email-verification {
+  display: none;
+  min-width: 400px;
+}
+
+#forgot-password-btn {
+  cursor: pointer;
+  font-size: 17px;
+  text-decoration: underline;
+}
+
+#reset-password-form {
+  display: none;
+}
+
+#login-with-facebook-btn {
+  margin-top: 10px;
+}
