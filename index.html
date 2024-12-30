@@ -65,6 +65,15 @@
           <form class="ui form big">
             <div class="ui stacked segment">
               <div class="ui message big hidden" id="profile-message"></div>
+              <label for="update-image-file-input">
+                <img
+                  alt="profile picture"
+                  class="ui centered circular image"
+                  id="profile-picture-image"
+                />
+              </label>
+              <input type="file" id="update-image-file-input" />
+
               <!-- Add a name Field -->
               <div class="field">
                 <div class="ui left icon input big">
@@ -158,6 +167,14 @@
         <form class="ui form">
           <div class="ui stacked segment">
             <div class="ui error message big" id="error-message"></div>
+
+            <!-- Add Profile Picture -->
+            <div class="field">
+              <div class="ui left icon input big">
+                <i class="image icon"></i>
+                <input type="file" id="image-file-input" />
+              </div>
+            </div>
 
             <!-- Add a name Field -->
             <div class="field">

@@ -9,7 +9,6 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     FacebookAuthProvider,
-
         
  } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
 
@@ -22,9 +21,19 @@ import {
 }from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js"
 
 
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL,
+}from "https://www.gstatic.com/firebasejs/11.1.0/firebase-storage.js"
+
+
+
  //create the auth object
 const auth = getAuth();
 const mainView = document.getElementById('main-view');
+const storage = getStorage();
 
 //get instance of the firebase firestore object
 const db=getFirestore();
@@ -52,12 +61,17 @@ const haveAnAccountBtn = document.getElementById('have-an-account-btn');
 const signUpFormView = document.getElementById('signup-form');
 const userProfileView = document.getElementById('user-profile');
 
+
 // Get Profile View Elements
 const profileName = document.getElementById('profile-name'); 
 const profilePhoneNumber = document.getElementById('profile-phone-number');
 const profileEmail = document.getElementById('profile-email');
 const profileUpdateBtn = document.getElementById('update-profile-btn');
 const profileMessage = document.getElementById('profile-message');
+const userProfileImage = document.getElementById('image-file-input');
+let userImage = null;
+const profilePictureImage = document.getElementById('profile-picture-image');
+const profilePictureUpdateImage = document.getElementById('update-image-file-input');
 
 const UIuserEmail = document.getElementById('user-email');
 const logOutBtn = document.getElementById('logout-btn');
@@ -79,6 +93,7 @@ onAuthStateChanged(auth, async (user) => {
             userProfileView.style.display = 'none'; //hide the user profile view
         }else{
             // if emailVerified is true, hide the emailverification view and show the user profile view
+            // Also get the profile image from cloud storage and show in the user profile view
             userProfileView.style.display = 'block'; //show the user profile view
             UIuserEmail.innerHTML = user.email;
             emailVerificationView.style.display = 'none'; // hide the email verification view
@@ -97,6 +112,11 @@ onAuthStateChanged(auth, async (user) => {
                 console.log(docSnap.data().name);
                 console.log(docSnap.data().email);
                 console.log(docSnap.data().phoneNumber);
+
+                const fileRef = ref(storage, `user_images/${user.uid}/${user.uid}-mascot}`);
+                // const profileImageUrl = await getDownloadURL(fileRef);
+                // console.log(profileImageUrl);
+                // profilePictureImage.src = profileImageUrl;
 
             }catch(error){
                 console.log(error);
@@ -128,6 +148,9 @@ const signUpButtonPressed = async(e) => {
             phoneNumber: phoneNumber.value,
             email: email.value,
         });
+
+        const storageRef = ref(storage, `user_images/${userCredential.user.uid}/${userImage.name}`);
+        await uploadBytes(storageRef, userImage)
         console.log(userCredential);
 
     }
@@ -281,6 +304,9 @@ const profileUpdateBtnPressed = async(e) =>{
             phoneNumber: profilePhoneNumber.value,
             email: profileEmail.value,
         });
+        //const updateStorageRef = ref(storage, `user_images/${user.uid}/${user.uid}-mascot}`);
+        //await uploadBytes(updateStorageRef, userImage);
+
         profileMessage.classList.remove('hidden');
         profileMessage.classList.add('visible');
         profileMessage.classList.add('success');
@@ -296,6 +322,45 @@ const profileUpdateBtnPressed = async(e) =>{
  
 }
 
+const imageFileChosen = async(e) =>{
+
+  
+    try{
+    // get the image chosen by the user through the event
+    console.log(e.target.files[0]);
+    userImage = e.target.files[0];
+
+    }catch(error){
+        console.log(error.code);
+
+    }
+ 
+}
+
+
+
+const updateImageFileChosen = async(e) =>{
+
+  
+    try{
+    // get the image chosen by the user through the event
+    console.log(e.target.files[0]);
+    userImage = e.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = (e) =>{
+        console.log(e.target.result);
+        profilePictureImage.src = e.target.result;
+    };
+
+    }catch(error){
+        console.log(error.code);
+
+    }
+ 
+}
+
+
 signUpBtn.addEventListener('click', signUpButtonPressed);
 logOutBtn.addEventListener('click', logOutButtonPressed);
 loginBtn.addEventListener('click', loginButtonPressed);
@@ -307,6 +372,9 @@ resetPasswordBtn.addEventListener('click', resetPasswordBtnPressed);
 loginWithGoogleBtn.addEventListener('click', loginWithGoogleBtnPressed);
 loginWithFacebookBtn.addEventListener('click', loginWithFacebookBtnPressed);
 profileUpdateBtn.addEventListener('click', profileUpdateBtnPressed);
+userProfileImage.addEventListener('change', imageFileChosen); // listens for the change event as soon as the user selects an image file
+profilePictureUpdateImage.addEventListener('change', updateImageFileChosen); // listens for the change event as soon as the user selects an image file
+
 
 const formatErrorMessage = (errorCode) => {
     let message = "";
